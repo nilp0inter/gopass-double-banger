@@ -5,7 +5,7 @@ GOFILES_NOVENDOR          := $(shell find . -name vendor -prune -o -type f -name
 GOFILES_BUILD             := $(shell find . -type f -name '*.go' -not -name '*_test.go')
 PROTOFILES                := $(shell find . -name vendor -prune -o -type f -name '*.proto' -print)
 GOPASS_VERSION            ?= $(shell cat VERSION)
-GOPASS_OUTPUT             ?= gopass-hibp
+GOPASS_OUTPUT             ?= gopass-double-banger
 GOPASS_REVISION           := $(shell cat COMMIT 2>/dev/null || git rev-parse --short=8 HEAD)
 # Support reproducible builds by embedding date according to SOURCE_DATE_EPOCH if present
 DATE                      := $(shell date -u -d "@$(SOURCE_DATE_EPOCH)" '+%FT%T%z' 2>/dev/null || date -u '+%FT%T%z')

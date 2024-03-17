@@ -1,4 +1,4 @@
-module github.com/gopasspw/gopass-hibp
+module github.com/gopasspw/gopass-double-banger
 
 go 1.22.0
 

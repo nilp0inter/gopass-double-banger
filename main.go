@@ -7,14 +7,12 @@ import (
 	"os"
 	"os/signal"
 
-	hapi "github.com/gopasspw/gopass-hibp/pkg/hibp/api"
-	hibpdump "github.com/gopasspw/gopass-hibp/pkg/hibp/dump"
 	"github.com/gopasspw/gopass/pkg/gopass/api"
 	"github.com/urfave/cli/v2"
 )
 
 const (
-	name = "gopass-hibp"
+	name = "gopass-double-banger"
 )
 
 // Version is the released version of gopass.
@@ -39,14 +37,10 @@ func main() {
 		}
 	}()
 
-	gp, err := api.New(ctx)
+	_, err := api.New(ctx)
 	if err != nil {
 		fmt.Printf("Failed to initialize gopass API: %s\n", err)
 		os.Exit(1)
-	}
-
-	hibp := &hibp{
-		gp: gp,
 	}
 
 	app := cli.NewApp()
@@ -62,7 +56,7 @@ func main() {
 				"This command will decrypt all secrets and check the passwords against the public " +
 				"havibeenpwned.com v2 API.",
 			Action: func(c *cli.Context) error {
-				return hibp.CheckAPI(c.Context, c.Bool("force"))
+				return nil
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -83,7 +77,7 @@ func main() {
 				"Most users should probably use the API. " +
 				"If you want to use the dumps you need to use 7z to extract the dump: 7z x pwned-passwords-ordered-2.0.txt.7z.",
 			Action: func(c *cli.Context) error {
-				return hibp.CheckDump(c.Context, c.Bool("force"), c.StringSlice("files"))
+				return nil
 			},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
@@ -101,7 +95,7 @@ func main() {
 			Name:  "download",
 			Usage: "Download HIBP dumps from the v2 API",
 			Action: func(c *cli.Context) error {
-				return hapi.Download(c.Context, c.String("output"), c.Bool("keep"))
+				return nil
 			},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -120,12 +114,7 @@ func main() {
 			Name:  "merge",
 			Usage: "Merge different dumps",
 			Action: func(c *cli.Context) error {
-				scanner, err := hibpdump.New(c.StringSlice("files")...)
-				if err != nil {
-					return err
-				}
-
-				return scanner.Merge(ctx, c.String("output"))
+				return nil
 			},
 			Flags: []cli.Flag{
 				&cli.StringSliceFlag{
