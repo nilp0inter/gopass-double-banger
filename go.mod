@@ -3,17 +3,21 @@ module github.com/gopasspw/gopass-double-banger
 go 1.22.0
 
 require (
+	github.com/ProtonMail/go-crypto v1.0.0
+	github.com/ProtonMail/gopenpgp/v2 v2.7.5
 	github.com/blang/semver/v4 v4.0.0
 	github.com/gopasspw/gopass v1.15.12
+	github.com/manifoldco/promptui v0.9.0
 	github.com/urfave/cli/v2 v2.27.1
 )
 
 require (
 	filippo.io/age v1.1.1 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/ProtonMail/go-crypto v1.0.0 // indirect
+	github.com/ProtonMail/go-mime v0.0.0-20230322103455-7d82a3887f2f // indirect
 	github.com/alessio/shellescape v1.4.2 // indirect
 	github.com/caspr-io/yamlpath v0.0.0-20200722075116-502e8d113a9b // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/danieljoos/wincred v1.2.1 // indirect
@@ -28,6 +32,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/zerolog v1.32.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
@@ -38,5 +43,6 @@ require (
 	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
