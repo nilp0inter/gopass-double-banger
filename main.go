@@ -46,86 +46,29 @@ func main() {
 	app := cli.NewApp()
 	app.Name = name
 	app.Version = getVersion().String()
-	app.Usage = "haveibeenpwned.com leak checker for gopass"
+	app.Usage = "Gopass integration for nested secrets"
 	app.EnableBashCompletion = true
 	app.Commands = []*cli.Command{
 		{
-			Name:  "api",
-			Usage: "Detect leaked passwords using the HIBPv2 API",
+			Name:  "show",
+			Usage: "Decrypt and show a nested secret",
 			Description: "" +
-				"This command will decrypt all secrets and check the passwords against the public " +
-				"havibeenpwned.com v2 API.",
+				"This command will decrypt a nested secret and show it.",
 			Action: func(c *cli.Context) error {
 				return nil
 			},
 			Flags: []cli.Flag{
-				&cli.BoolFlag{
-					Name:    "force",
-					Aliases: []string{"f"},
-					Usage:   "Force checking secrets against the public API",
-				},
 			},
 		},
 		{
-			Name:  "dump",
-			Usage: "Detect leaked passwords using the HIBP SHA-1 dumps",
+			Name:  "insert",
+			Usage: "Insert a nested secret",
 			Description: "" +
-				"This command will decrypt all secrets and check the passwords against the " +
-				"havibeenpwned.com SHA-1 dumps (ordered by hash). " +
-				"To use the dumps you need to download the dumps from https://haveibeenpwned.com/passwords first. Be sure to grab the one that says '(ordered by hash)'. " +
-				"This is a very expensive operation, for advanced users. " +
-				"Most users should probably use the API. " +
-				"If you want to use the dumps you need to use 7z to extract the dump: 7z x pwned-passwords-ordered-2.0.txt.7z.",
+				"This command will insert a nested secret into the store.",
 			Action: func(c *cli.Context) error {
 				return nil
 			},
 			Flags: []cli.Flag{
-				&cli.BoolFlag{
-					Name:    "force",
-					Aliases: []string{"f"},
-					Usage:   "Force checking secrets against the dumps",
-				},
-				&cli.StringSliceFlag{
-					Name:  "files",
-					Usage: "One or more HIBP v1/v2 dumps",
-				},
-			},
-		},
-		{
-			Name:  "download",
-			Usage: "Download HIBP dumps from the v2 API",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:    "output",
-					Aliases: []string{"f"},
-					Usage:   "Output location",
-				},
-				&cli.BoolFlag{
-					Name:    "keep",
-					Aliases: []string{"k"},
-					Usage:   "Keep and re-use partial downloads",
-				},
-			},
-		},
-		{
-			Name:  "merge",
-			Usage: "Merge different dumps",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-			Flags: []cli.Flag{
-				&cli.StringSliceFlag{
-					Name:  "files",
-					Usage: "One or more HIBP v1/v2 dumps",
-				},
-				&cli.StringFlag{
-					Name:    "output",
-					Aliases: []string{"f"},
-					Usage:   "Output location",
-				},
 			},
 		},
 		{
