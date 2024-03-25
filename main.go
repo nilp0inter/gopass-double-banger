@@ -24,6 +24,9 @@ var version string
 func readPassword(prompt string) ([]byte, error) {
 	prompter := promptui.Prompt{
 		Label: prompt,
+		Templates: &promptui.PromptTemplates{
+			Valid:   "{{ . }}: ",
+		},
 		Mask:  '*',
 		Stdout: os.Stderr,
 	}
@@ -70,6 +73,7 @@ func main() {
 		{
 			Name:  "show",
 			Usage: "Decrypt and show a nested secret",
+			ArgsUsage: "[[secret-store-path]]",
 			Description: "" +
 				"This command will decrypt a nested secret and show it.",
 			Action: func(c *cli.Context) error {
@@ -79,9 +83,8 @@ func main() {
 				}
 
 				password, err := readPassword(c.String("prompt"))
-
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to read password")
 				}
 
 				// Process each file argument
@@ -91,25 +94,36 @@ func main() {
 					// Reading secrets by their name and revision from within the store.
 					sec, err := gp.Get(ctx, file, "latest")
 					if err != nil {
-						panic(err)
+						if c.Bool("abort") {
+							return fmt.Errorf("Failed to read path: %s", file)
+						}
+						fmt.Fprintf(os.Stderr, "Failed to read path: %s\n", file)
+						continue
 					}
 
 					message, err := helper.DecryptMessageWithPassword(password, string(sec.Bytes())) 
 					if err != nil {
-						fmt.Errorf("Failed to decrypt path: %s\n", file)
+						if c.Bool("abort") {
+							return fmt.Errorf("Failed to decrypt path: %s", file)
+						}
+						fmt.Fprintf(os.Stderr, "Failed to decrypt path: %s\n", file)
+						continue
 					}
 					fmt.Print(message)
 				}
-
 				return nil
 			},
 			Flags: []cli.Flag{
-				// Prompt for password request
 				&cli.StringFlag{
 					Name:    "prompt",
 					Aliases: []string{"p"},
 					Usage:   "Prompt for password",
 					Value: "Password",
+				},
+				&cli.BoolFlag{
+					Name:    "abort",
+					Aliases: []string{"a"},
+					Usage:   "Abort on first error",
 				},
 			},
 		},
@@ -117,6 +131,7 @@ func main() {
 			// gopass-double-banger insert --prompt="Password" [secret-store-path] [plaintext-file]
 			Name:  "insert",
 			Usage: "Insert a nested secret",
+			ArgsUsage: "[secret-store-path] [plaintext-file]",
 			Description: "" +
 				"This command will insert a nested secret into the store.",
 			Action: func(c *cli.Context) error {
@@ -127,7 +142,7 @@ func main() {
 				password, err := readPassword(c.String("prompt"))
 
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to read password")
 				}
 
 				secretStorePath := c.Args().Get(0)
@@ -136,13 +151,13 @@ func main() {
 				// Read plaintext file
 				plaintext, err := os.ReadFile(plaintextFile)
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to read plaintext file: %s", plaintextFile)
 				}
 
 				// Encrypt data with password
 				armor, err := helper.EncryptMessageWithPassword(password, string(plaintext))
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to encrypt plaintext")
 				}
 
 				content := secrets.New()
@@ -150,7 +165,7 @@ func main() {
 
 				// Write the encrypted data to the store
 				if err := gp.Set(ctx, secretStorePath, content); err != nil {
-					return err
+					return fmt.Errorf("Failed to write secret to store: %s", secretStorePath)
 				}
 
 				return nil
