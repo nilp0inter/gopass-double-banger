@@ -29,7 +29,7 @@
         let
           pkgs = nixpkgsFor.${system};
         in
-        {
+        rec {
           gopass-double-banger = pkgs.buildGoModule {
             pname = "gopass-double-banger";
             inherit version;
@@ -48,6 +48,21 @@
             # vendorHash = pkgs.lib.fakeHash;
 
             vendorHash = "sha256-WBchbX6b/mkz7uP+v3ULJIlFYcwECp8AxAqtS4xLdAg=";
+          };
+          bootstrap-yk-oath = pkgs.writeShellApplication {
+            name = "bootstrap-yk-oath";
+            runtimeInputs = [
+              gopass-double-banger
+            ];
+            text = ''
+              [ $# -eq 2 ] || { echo "Usage: $0 <YK_DEVICE> <TOTP_PATH>"; exit 1; }
+              YK_DEVICE=$1
+              TOTP_PATH=$2
+              [ -z "$(gopass ls -f "$TOTP_PATH")" ] && echo "No TOTP entries found in $TOTP_PATH" && exit 1
+              ykman --device "$YK_DEVICE" oath reset
+              xargs -a <(gopass ls -f "$TOTP_PATH") -d '\n' gopass-double-banger show | xargs -n1 -d '\n' ykman --device "$YK_DEVICE" oath accounts uri -f -t
+              ykman --device "$YK_DEVICE" oath access change
+            '';
           };
         });
       
