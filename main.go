@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -87,6 +88,8 @@ func main() {
 					return fmt.Errorf("Failed to read password")
 				}
 
+				buffer := bytes.NewBuffer(nil)
+
 				// Process each file argument
 				for i := 0; i < c.NArg(); i++ {
 					file := c.Args().Get(i)
@@ -109,8 +112,9 @@ func main() {
 						fmt.Fprintf(os.Stderr, "Failed to decrypt path: %s\n", file)
 						continue
 					}
-					fmt.Print(message)
+					buffer.WriteString(message)
 				}
+				fmt.Print(buffer.String())
 				return nil
 			},
 			Flags: []cli.Flag{
