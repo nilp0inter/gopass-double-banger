@@ -7,8 +7,10 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/ProtonMail/gopenpgp/v2/helper"
+	"github.com/gopasspw/gopass/pkg/gopass"
 	"github.com/gopasspw/gopass/pkg/gopass/api"
 	"github.com/gopasspw/gopass/pkg/gopass/secrets"
 	"github.com/urfave/cli/v2"
@@ -91,17 +93,29 @@ func main() {
 				buffer := bytes.NewBuffer(nil)
 
 				// Process each file argument
+				SECRET:
 				for i := 0; i < c.NArg(); i++ {
 					file := c.Args().Get(i)
 
+					var sec gopass.Secret
+
 					// Reading secrets by their name and revision from within the store.
-					sec, err := gp.Get(ctx, file, "latest")
-					if err != nil {
-						if c.Bool("abort") {
-							return fmt.Errorf("Failed to read path: %s", file)
+					RECOVER:
+					for retry := 0; retry < 3; retry++ {
+						sec, err = gp.Get(ctx, file, "latest")
+						if err != nil {
+							if retry < 2 {
+								time.Sleep(1 * time.Second)
+							} else {
+								if c.Bool("abort") {
+									return fmt.Errorf("Failed to read path: %s", file)
+								}
+								fmt.Fprintf(os.Stderr, "Failed to read path: %s\n", file)
+								continue SECRET
+							}
+						} else {
+							break RECOVER
 						}
-						fmt.Fprintf(os.Stderr, "Failed to read path: %s\n", file)
-						continue
 					}
 
 					message, err := helper.DecryptMessageWithPassword(password, string(sec.Bytes())) 
