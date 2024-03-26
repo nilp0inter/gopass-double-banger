@@ -64,6 +64,21 @@
               ykman --device "$YK_DEVICE" oath access change
             '';
           };
+          capture-totp-qr = pkgs.writeShellApplication {
+            name = "capture-totp-qr";
+            runtimeInputs = [
+              gopass-double-banger
+              pkgs.imagemagick
+              pkgs.zbar
+            ];
+            text = ''
+              [ $# -eq 1 ] || { echo "Usage: $0 <TOTP_PATH>"; exit 1; }
+              TOTP_PATH=$1
+              TOTP_URI=$(import -silent -window root bmp:- | zbarimg - | sed -e 's/QR-Code://')
+              echo "$TOTP_URI" | grep -q '^otpauth://totp/' || { echo "No QR code found"; exit 1; }
+              gopass-double-banger insert "$TOTP_PATH" <(echo "$TOTP_URI")
+            '';
+          };
         });
       
       # Add dependencies that are only needed for development
