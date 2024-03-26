@@ -15,6 +15,8 @@ go install github.com/gopasspw/gopass-double-banger@latest
 This script loads a Yubikey with OATH secrets from a gopass store subfolder
 which secrets are stored with gopass-double-banger.
 
+Requires the `ykman` command line tool to be installed.
+
 ```console
 $ nix run .#bootstrap-yk-oath
 Usage: bootstrap-yk-oath <YK_DEVICE> <TOTP_PATH>
